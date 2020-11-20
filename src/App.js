@@ -1,24 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { ThemeProvider } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import theme from "./style/theme";
+import NavBar from "./components/NavBar";
+import { Grid, Paper } from "@material-ui/core";
+import ProjectRow from "./components/ProjectRow";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+    padding: theme.spacing(3)
+  }
+}));
 
 function App() {
+  const classes = useStyles();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+
+      <NavBar />
+
+      {/* Main Content */}
+      <div className={classes.root}>
+        {/* List of all Projects */}
+        <Grid container spacing={1}>
+          <ProjectRow />
+        </Grid>
+      </div>
+    </ThemeProvider>
   );
 }
 
