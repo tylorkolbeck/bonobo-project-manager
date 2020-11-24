@@ -4,26 +4,22 @@ import {
   Card,
   Typography,
   Avatar,
-  Button,
   CardContent,
   CardHeader,
   IconButton,
   CardActions,
-  Collapse
+  Collapse,
+  List
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { deepOrange } from '@material-ui/core/colors'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
-import FavoriteIcon from '@material-ui/icons/Favorite'
-import ShareIcon from '@material-ui/icons/Share'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import clsx from 'clsx'
 import AvatarGroup from '@material-ui/lab/AvatarGroup'
+import TaskRow from './TaskRow'
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    // padding: theme.spacing(2)
-  },
   orange: {
     color: theme.palette.getContrastText(deepOrange[500]),
     backgroundColor: deepOrange[500]
@@ -36,12 +32,27 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export default function ProjectRow() {
+export default function ProjectRow({ projectData }) {
   const classes = useStyles()
-  const [expanded, setExpanded] = React.useState(false)
+  const [expanded, setExpanded] = React.useState(true)
+  const [taskList, setTaskList] = React.useState(projectData.tasks)
+  console.log(projectData.tasks)
 
   const handleExpandClick = () => {
     setExpanded(!expanded)
+  }
+
+  function handleTaskToggleCompleted(taskId) {
+    const newTaskList = taskList.map((task) => {
+      if (task.id === taskId) {
+        task.completed = !task.completed
+        return task
+      } else {
+        return task
+      }
+    })
+
+    setTaskList(newTaskList)
   }
 
   return (
@@ -50,30 +61,36 @@ export default function ProjectRow() {
         <Card className={classes.paper}>
           <CardHeader
             avatar={
-              <Avatar aria-label='recipe' className={classes.orange}>
-                TK
-              </Avatar>
+              <Avatar
+                aria-label={projectData.user.name}
+                className={classes.orange}
+                src=''
+              />
             }
             action={
               <IconButton aria-label='settings'>
                 <MoreVertIcon />
               </IconButton>
             }
-            title='Front End Development'
+            title={projectData.name}
             titleTypographyProps={{ variant: 'h6' }}
+            subheader={projectData.description}
           />
           <CardActions disableSpacing>
             <AvatarGroup max={4}>
-              <Avatar alt='Remy Sharp' src='/static/images/avatar/1.jpg' />
-              <Avatar alt='Travis Howard' src='/static/images/avatar/2.jpg' />
-              <Avatar alt='Cindy Baker' src='/static/images/avatar/3.jpg' />
-              <Avatar alt='Agnes Walker' src='/static/images/avatar/4.jpg' />
-              <Avatar
-                alt='Trevor Henderson'
-                src='/static/images/avatar/5.jpg'
-              />
+              {projectData.contributers.map((user) => {
+                return (
+                  <Avatar
+                    alt={user.name}
+                    key={`avatar_${projectData.id}_${user.id}`}
+                    src='/static/images/avatar/1.jpg'
+                  />
+                )
+              })}
             </AvatarGroup>
-            <Typography style={{ marginLeft: 'auto' }}>5 / 10 tasks</Typography>
+            <Typography style={{ marginLeft: 'auto' }}>
+              {projectData.tasks.length} Tasks
+            </Typography>
             <IconButton
               className={clsx(classes.expand, {
                 [classes.expandOpen]: expanded
@@ -85,12 +102,21 @@ export default function ProjectRow() {
               <ExpandMoreIcon />
             </IconButton>
           </CardActions>
+
+          {/* Tasks */}
           <Collapse in={expanded} timeout='auto' unmountOnExit>
             <CardContent>
-              <Typography>Task One</Typography>
-              <Typography>Task Two</Typography>
-              <Typography>Task Three</Typography>
-              <Typography>Task Four</Typography>
+              <List>
+                {taskList.map((task) => {
+                  return (
+                    <TaskRow
+                      key={task.id}
+                      taskData={task}
+                      toggleTaskCompleted={handleTaskToggleCompleted}
+                    />
+                  )
+                })}
+              </List>
             </CardContent>
           </Collapse>
         </Card>

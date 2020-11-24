@@ -28,7 +28,9 @@ function App() {
       <div className={classes.root}>
         {/* List of all Projects */}
         <Grid container spacing={1}>
-          <ProjectRow />
+          {__projects.map((project) => {
+            return <ProjectRow key={project.id} projectData={project} />
+          })}
         </Grid>
       </div>
     </ThemeProvider>
